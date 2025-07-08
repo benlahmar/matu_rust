@@ -1,0 +1,20 @@
+# Supprimer main.rs s'il existe
+Remove-Item -Path "src\main.rs" -ErrorAction SilentlyContinue
+
+# Créer les dossiers
+New-Item -ItemType Directory -Path "src\web\handlers" -Force
+New-Item -ItemType Directory -Path "src\domain" -Force
+New-Item -ItemType Directory -Path "src\app" -Force
+New-Item -ItemType Directory -Path "src\infra\repository" -Force
+
+# Créer les fichiers vides
+New-Item -ItemType File -Path "src\main.rs" -Force
+New-Item -ItemType File -Path "src\web\mod.rs" -Force
+New-Item -ItemType File -Path "src\web\routes.rs" -Force
+New-Item -ItemType File -Path "src\web\handlers\mod.rs" -Force
+New-Item -ItemType File -Path "src\domain\mod.rs" -Force
+New-Item -ItemType File -Path "src\app\mod.rs" -Force
+New-Item -ItemType File -Path "src\infra\mod.rs" -Force
+New-Item -ItemType File -Path "src\infra\repository\mod.rs" -Force
+New-Item -ItemType File -Path "src\error.rs" -Force
+

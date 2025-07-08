@@ -1,0 +1,43 @@
+[package]
+name = "matu"
+version = "0.1.0"
+edition = "2024"
+
+
+
+[dependencies]
+# Le framework web
+actix-web = "4"
+
+# Le runtime asynchrone
+tokio = { version = "1.36", features = ["full"] }
+
+# La sérialisation/désérialisation JSON
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Pour la journalisation (logs)
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Pour générer des identifiants uniques (UUIDs)
+uuid = { version = "1.8", features = ["v4", "serde"] }
+
+# Pour gérer les dates et heures
+chrono = { version = "0.4", features = ["serde"] }
+
+# Pour la gestion d'erreurs
+thiserror = "1.0"
+
+# Pour l'accès à la base de données
+# Nous le commenterons pour l'instant pour ne pas avoir à installer PostgreSQL tout de suite
+sqlx = { version = "0.7.4", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono"] }
+# Pour charger les variables d'environnement depuis le fichier .env
+dotenvy = "0.15"
+async-trait = "0.1.88"
+rust-argon2 = "2.1"
+
+password-hash = "0.5" # This crate provides common traits for password hashing
+rand_core = { version = "0.6", features = ["std"] } # For secure random number generation (salts)
+
+env_logger = "0.11"
