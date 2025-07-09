@@ -14,7 +14,6 @@ pub struct PostgresUserRepository {
 }
 
 impl PostgresUserRepository {
-    /// Creates a new `PostgresUserRepository` instance.
     pub fn new(pool: Pool<Postgres>) -> Self {
         PostgresUserRepository { pool }
     }
@@ -59,6 +58,19 @@ impl UserRepository for PostgresUserRepository {
         Ok(user)
     }
 
+    async fn get_all_user(&self) -> Result<Vec<User>, Error> {
+        let users = sqlx::query_as!(
+            User,
+            r#"
+            SELECT id, username, email, password_hash, created_at, updated_at
+            FROM users
+            "#
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(users)
+    }
     async fn get_user_by_email(&self, email: &str) -> Result<Option<User>, Error> {
         let user = sqlx::query_as!(
             User,

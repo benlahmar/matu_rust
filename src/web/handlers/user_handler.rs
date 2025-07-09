@@ -26,6 +26,17 @@ pub async fn create_user(
     }
 }
 
+pub async fn get_all_users(
+    user_service: web::Data<Arc<dyn UserService>>,
+) -> impl Responder {
+    match user_service.get_all_user().await {
+        Ok(users) => HttpResponse::Ok().json(users),
+        Err(e) => {
+            eprintln!("Error retrieving all users: {:?}", e);
+            HttpResponse::InternalServerError().json(format!("Failed to retrieve users: {}", e))
+        }
+    }
+}
 // --- HANDLER: Get User by ID ---> users/{id}---
 pub async fn get_user_by_id(
     path: web::Path<Uuid>,

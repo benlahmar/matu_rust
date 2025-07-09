@@ -81,6 +81,21 @@ impl UserService for UserServiceImpl<PostgresUserRepository> {
         }))
     }
 
+async fn get_all_user(&self) -> Result<Vec<UserResponse>, SqlxError> {
+   let users= self.user_repo.get_all_user().await?;
+    let mut us:Vec<UserResponse> = vec![];
+    for u in users {
+        us.push(UserResponse{
+            id: u.id,
+            username: u.username,
+            email: u.email,
+            created_at: u.created_at,
+        });
+    }
+
+   Ok(us)
+}
+
     async fn get_user_by_email(&self, email: &str) -> Result<Option<UserResponse>, SqlxError> {
         let user_option = self.user_repo.get_user_by_email(email).await?;
         Ok(user_option.map(|user| UserResponse {

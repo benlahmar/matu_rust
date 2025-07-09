@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::domain::user::{User, UserRequest}; // Adjust the path as needed
+use crate::domain::user::{User, UserRequest}; 
 
 #[async_trait]
 pub trait UserRepository {
@@ -10,6 +10,8 @@ pub trait UserRepository {
     
     async fn get_user_by_id(&self, user_id: Uuid) -> Result<Option<User>, sqlx::Error>;
     
+    async fn get_all_user(&self) -> Result<Vec<User>, sqlx::Error>;
+
     async fn get_user_by_email(&self, email: &str) -> Result<Option<User>, sqlx::Error>;
     
     async fn update_user(&self, user_id: Uuid, updated_user: UserRequest) -> Result<User, sqlx::Error>;
