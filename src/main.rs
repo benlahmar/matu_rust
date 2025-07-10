@@ -7,6 +7,9 @@ mod web;
 use actix_web::middleware::Logger;
 use actix_web::{web as aw_web, App, HttpServer, Responder, HttpResponse}; // Alias web to aw_web to avoid conflict with `web` directory
 
+use actix_cors::Cors;
+use actix_web::http::header;
+
 use dotenvy::dotenv;
 use uuid::Uuid;
 use crate::app::post_service::PostService;
@@ -107,13 +110,33 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     */
 
 
+   // let cors = Cors::permissive(); // autorise tout (méthodes, headers, origin)
+
     HttpServer::new(move || {
+       /* let cors = Cors::default()
+    .allowed_origin("http://localhost:5173")
+    .allowed_methods(vec!["GET", "POST"])
+    .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+    .allowed_header(header::CONTENT_TYPE)
+    .max_age(3600);
+*/
+//ou
+
+let cors = Cors::default()
+    .allow_any_origin()
+    .allow_any_method()
+    .allow_any_header()
+    .max_age(3600);
+
         App::new()
+        .wrap(cors)
+         
             // Register the shared service data
            // .app_data(user_service.clone()) // Clone for each worker thread
              .app_data(aw_web::Data::new(user_service.clone()))
               .app_data(aw_web::Data::new(post_service.clone()))
              .wrap(Logger::default())
+            
             // User routes
             .service(
                 aw_web::scope("/users") // Base path for user-related routes
