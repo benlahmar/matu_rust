@@ -42,3 +42,6 @@ rand_core = { version = "0.6", features = ["std"] } # For secure random number g
 
 env_logger = "0.11"
 actix-cors = "0.6"
+
+actix-rt = "2" # Souvent inclus avec Actix Web, mais utile de le spécifier 
+awc = "3"

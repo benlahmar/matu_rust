@@ -23,7 +23,8 @@ use crate::app::user_service::UserService; // The service trait
 use crate::app::user_service_impl::UserServiceImpl;
 
 use crate::web::handlers::user_handler::{create_user, get_user_by_id, get_user_by_email, update_user, delete_user,get_all_users};
-use crate::web::handlers::post_handler::{create_post,get_all_posts};
+use crate::web::handlers::post_handler::{create_post,get_all_posts,get_post_withuser,get_all_posts_user,get_post_by_id};
+use crate::web::users_client::UsersClient;
 
 use std::sync::Arc;
 
@@ -32,7 +33,7 @@ pub struct AppState {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> std::io::Result<()> { 
     dotenv().ok();
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("actix_web=debug,{}=debug,info"));
@@ -42,9 +43,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let database_url = std::env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set");
 
-    let pool = db::create_pool(&database_url).await?;
+    let pool = db::create_pool(&database_url).await
+    .expect("Failed to create database pool");
     let user_repo = PostgresUserRepository::new(pool.clone());
-     let new_user_request = crate::domain::user::UserRequest {
+    /* let new_user_request = crate::domain::user::UserRequest {
         username: "habib".to_string(),
      email: "habib@example.com".to_string(),
         password: "secure_password".to_string(), // hasher ca mais ds service 
@@ -53,7 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
          Ok(user) => println!("Created user: {:?}", user),
          Err(e) => eprintln!("Error creating user: {}", e),
      }
-     
+     */
   /*
     let user_id=Uuid::parse_str("0e246570-a855-407d-920e-85b1b4334538").unwrap();
     
@@ -94,7 +96,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let myrepo=PostRepoImpl::new(pool.clone());
     let p_service = PostServiceImpl::new(myrepo);
     let post_service:Arc<dyn PostService> = Arc::new(p_service);
-  /*
+
+
+      /*
    match user_service.get_user_by_id(user_id).await {
          Ok(Some(user))=>{
             println!(" service user by id: ID={}, Username={}, Email={}",
@@ -128,6 +132,9 @@ let cors = Cors::default()
     .allow_any_header()
     .max_age(3600);
 
+ let users_client = UsersClient::new("http://127.0.0.1:3000".to_string());
+        let users_client_data = aw_web::Data::new(users_client); // Wrap in web::Data
+        
         App::new()
         .wrap(cors)
          
@@ -135,6 +142,7 @@ let cors = Cors::default()
            // .app_data(user_service.clone()) // Clone for each worker thread
              .app_data(aw_web::Data::new(user_service.clone()))
               .app_data(aw_web::Data::new(post_service.clone()))
+              .app_data(users_client_data)
              .wrap(Logger::default())
             
             // User routes
@@ -150,6 +158,11 @@ let cors = Cors::default()
             .service(aw_web::scope("/posts")
                 .route("", aw_web::post().to(create_post))
                 .route("", aw_web::get().to(get_all_posts))
+                .route("/{id}/user", aw_web::get().to(get_post_withuser))
+                .route("/{id}/users", aw_web::get().to(get_all_posts_user))
+                .route("/{id}", aw_web::get().to(get_post_by_id))
+
+                
         
         )
 
